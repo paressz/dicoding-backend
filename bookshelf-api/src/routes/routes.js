@@ -1,8 +1,8 @@
-const addBookHandler = require('handler/addBookHandler.js');
-const deleteBookHandler = require('handler/deleteBookHandler.js');
-const editBookHandler = require('handler/editBookHandler.js');
-const getAllBookHandler = require ('handler/getAllBookHandler.js');
-const getBookByIdHandler = require('handler/getBookByIdHandler.js');
+const addBookHandler = require('../handler/addBookHandler');
+const deleteBookHandler = require('../handler/deleteBookHandler');
+const editBookHandler = require('../handler/editBookHandler');
+const getAllBookHandler = require ('../handler/getAllBookHandler');
+const getBookByIdHandler = require('../handler/getBookByIdHandler');
 
 const routes = [
     {
@@ -16,18 +16,18 @@ const routes = [
         handler: getAllBookHandler,
     },
     {
-        method: 'POST',
-        path: '/books/{id}',
+        method: 'GET',
+        path: '/books/{bookId}',
         handler: getBookByIdHandler,
     },
     {
         method: 'PUT',
-        path: '/books/{id}',
+        path: '/books/{bookId}',
         handler: editBookHandler,
     },
     {
         method: 'DELETE',
-        path: '/books/{id}',
+        path: '/books/{bookId}',
         handler: deleteBookHandler,
     },
 ];

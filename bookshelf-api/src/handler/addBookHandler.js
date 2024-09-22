@@ -1,5 +1,5 @@
 const NanoId = require('nanoid');
-const books = require('model/books.js')
+const books = require('../model/Book')
 
 const addBookHandler = (req, h) => {
     const {
@@ -17,8 +17,18 @@ const addBookHandler = (req, h) => {
     const updatedAt = insertedAt;
     const finished = pageCount === readPage ? true : false;
     const book = {
-        id, name, year, author, summary, publisher, pageCount, readPage,
-        finished, reading, insertedAt, updatedAt 
+        id, 
+        name, 
+        year, 
+        author, 
+        summary, 
+        publisher, 
+        pageCount, 
+        readPage,
+        finished, 
+        reading, 
+        insertedAt, 
+        updatedAt 
     };
     //Client tidak melampirkan properti namepada request body
     if (!name) {
@@ -39,24 +49,35 @@ const addBookHandler = (req, h) => {
         return response;
     };
     //Secara kebetulan terjadi duplikasi ID
-    const bookExist = books.some((book) => book.id === id);
-    if (bookExist) { id = NanoId.nanoid(16) };
+    const bookExist = checkIfBookExisted(id);
+    if (bookExist) {
+        const oldId = id; 
+        id = NanoId.nanoid(16); 
+        console.log(`Terjadi duplikasi ID, ${oldId} diubah menjadi ${id}`);
+    }
     books.push(book);
-    const insertSuccess = books.some((book) => book.id === id);
+    const insertSuccess = checkIfBookExisted(id);
     if (insertSuccess) {
         const response = h.response({
             status: 'Success',
             message: 'Buku berhasil ditambahkan',
-            data: id
+            data: {
+                bookId: id
+            }
         });
+        response.code(201)
         return response;
     };
     const response = h.response({
-        status: 'fail',
+        status: 'Fail',
         message: 'Mengeksekusi kode yang seharusnya tidak bisa dieksekusi',
     });
-    response.code(400);
+    response.code(500);
     return response;
 };
 
-module.exports = { addBookHandler }
+function checkIfBookExisted(id) {
+    return books.some((book) => book.id === id);
+}
+
+module.exports = addBookHandler;
