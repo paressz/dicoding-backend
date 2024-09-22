@@ -7,7 +7,7 @@ const getBookByIdHandler = (req, h) => {
     if (index !== -1) {
         const book = books[index];
         const response = h.response({
-            status: 'Success',
+            status: 'success',
             data: {
                 book: book
             }
@@ -16,7 +16,7 @@ const getBookByIdHandler = (req, h) => {
         return response;
     }
     const response = h.response({
-        status: 'Fail',
+        status: 'fail',
         message: 'Buku tidak ditemukan'
     });
     response.code(404);

@@ -59,7 +59,7 @@ const addBookHandler = (req, h) => {
     const insertSuccess = checkIfBookExisted(id);
     if (insertSuccess) {
         const response = h.response({
-            status: 'Success',
+            status: 'success',
             message: 'Buku berhasil ditambahkan',
             data: {
                 bookId: id
@@ -69,7 +69,7 @@ const addBookHandler = (req, h) => {
         return response;
     };
     const response = h.response({
-        status: 'Fail',
+        status: 'fail',
         message: 'Mengeksekusi kode yang seharusnya tidak bisa dieksekusi',
     });
     response.code(500);

@@ -7,19 +7,19 @@ const getAllBookHandler = (req, h) => {
         const nameLowerCase = name.toLowerCase();
         booksFilter = booksFilter.filter((book) => book.name.toLowerCase().includes(nameLowerCase));
     }
-    if (reading === 0) {
+    if (reading == 0) {
         booksFilter = booksFilter.filter((book) => !book.reading);
-    } else if (reading === 1) {
+    } else if (reading == 1) {
         booksFilter = booksFilter.filter((book) => book.reading);
     }
-    if (finished === 0) {
+    if (finished == 0) {
         booksFilter = booksFilter.filter((book) => !book.finished);
-    } else if (finished === 1) {
+    } else if (finished == 1) {
         booksFilter = booksFilter.filter((book) => book.finished);
     }
     booksFilter = booksFilter.map(({id, name, publisher}) => ({id, name, publisher}));
     const response = h.response({
-        status: 'Success',
+        status: 'success',
         data: {
             books: booksFilter
         }

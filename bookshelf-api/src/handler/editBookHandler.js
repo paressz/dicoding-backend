@@ -6,7 +6,7 @@ const editBookHandler = (req, h) => {
     const index = books.findIndex(book => book.id === id);
     if(index === -1) {
         const response = h.response({
-            status: 'Fail',
+            status: 'fail',
             message: 'Gagal memperbarui buku. Id tidak ditemukan'
         });
         response.code(404);
@@ -46,11 +46,13 @@ const editBookHandler = (req, h) => {
     editedBook.author = author;
     editedBook.summary = summary;
     editedBook.publisher = publisher;
+    editedBook.pageCount = pageCount;
+    editedBook.readPage = readPage;
     editedBook.reading = reading;
     editedBook.updatedAt = new Date().toISOString();
     books[index] = editedBook;
     const response = h.response({
-        status: 'Success',
+        status: 'success',
         message: 'Buku berhasil diperbarui'
     });
     response.code(200);
