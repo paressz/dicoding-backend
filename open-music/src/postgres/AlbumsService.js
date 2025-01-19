@@ -4,7 +4,7 @@ const InvariantError = require('../exceptions/InvariantError');
 const Album =  require('../model/Album');
 const NotFoundError = require('../exceptions/NotFoundError');
 const config = require('./config');
-const SongSimple = require("../model/Song");
+const SongSimple = require('../model/Song');
 
 class AlbumsService {
   constructor() {
