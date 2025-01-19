@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
 const config = require('./config');
@@ -33,7 +33,7 @@ class SongService {
   }
 
   async addSong({ title, year, performer, genre, duration, albumId }){
-    const id = `song-${nanoid.nanoid(16)}`;
+    const id = `song-${nanoid(16)}`;
     const q = {
       text: 'INSERT INTO songs VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
       values: [id, title, year, performer, genre, duration, albumId],

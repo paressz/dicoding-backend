@@ -1,5 +1,5 @@
 const { Pool } = require('pg');
-const nanoid = require('nanoid');
+const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const Album =  require('../model/Album');
 const NotFoundError = require('../exceptions/NotFoundError');
@@ -11,7 +11,7 @@ class AlbumsService {
     this._pool = new Pool(config);
   };
   async addAlbum({ name, year }) {
-    const id = `album-${nanoid.nanoid(16)}`;
+    const id = `album-${nanoid(16)}`;
     const query = {
       text: 'INSERT INTO albums VALUES ($1, $2, $3) RETURNING id',
       values: [id, name, year],
