@@ -49,7 +49,7 @@ const init = async () => {
       if (!response.isServer) return h.continue;
       console.log(response);
       const newRes = h.response({
-        status: 'fail',
+        status: 'error',
         message: 'Server Error',
       }).code(500);
       return newRes;
