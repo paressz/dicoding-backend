@@ -23,12 +23,13 @@ class SongService {
 
   async getSong(id) {
     const q = {
-      text: 'SELECT * FROM songs WHERE id = $1 LIMIT 1',
+      text: 'SELECT * FROM songs WHERE id = $1',
       values: [id],
     };
     const result = await this._pool.query(q);
-    if (!result) throw new NotFoundError('No such song found');
-    return result.rows.map(Song);
+    const song = result.rows[0];
+    if (!result.rows.length) throw new NotFoundError('No such song found');
+    return song;
   }
 
   async addSong({ title, year, performer, genre, duration, albumId }){
@@ -39,34 +40,25 @@ class SongService {
     };
     const result = await this._pool.query(q);
     if (!result) throw new InvariantError('Failed to insert song');
-    return result.rows.map(Song).at(0).songId;
+    return result.rows[0].id;
   }
 
   async updateSong(id, { title, year, performer, genre, duration, albumId }) {
     const q  = {
-      text: `
-            UPDATE 
-                songs 
-            SET 
-                title = $2, year = $3, 
-                performer = $4, genre = $5, 
-                duration = $6, albumId = $7
-            WHERE 
-                id = $1
-            `,
+      text: 'UPDATE songs SET title = $2, year = $3, performer = $4, genre = $5, duration = $6, album_id = $7 WHERE id = $1 RETURNING id',
       values: [id, title, year, performer, genre, duration, albumId],
     };
     const result = await this._pool.query(q);
-    if (!result) throw new NotFoundError('Failed: No such song');
+    if (!result.rows.length) throw new NotFoundError('Failed: No such song');
   }
 
-  async deleteSong({ id }) {
+  async deleteSong(id) {
     const q = {
-      text: 'DELETE FROM songs WHERE id = $1',
+      text: 'DELETE FROM songs WHERE id = $1 RETURNING id',
       values: [id],
     };
-    const result = this._pool.query(q);
-    if (!result.rows.length) throw new NotFoundError('Failed: No such song');
+    const result = await this._pool.query(q);
+    if (!result.rows.length) throw new NotFoundError(`Failed: No such song ${id}`);
   }
 }
 

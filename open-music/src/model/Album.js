@@ -1,3 +1,3 @@
-const Album = ({ albumId, name, year }) => ({ albumId, name, year });
+const Album = ({ id, name, year }) => ({ id, name, year });
 
 module.exports =  Album;

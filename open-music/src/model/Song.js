@@ -1,5 +1,14 @@
+const SongSimple = ({
+  id,
+  title,
+  performer,
+}) => ({
+  id,
+  title,
+  performer,
+});
 const Song = ({
-  songId,
+  id,
   title,
   year,
   genre,
@@ -7,7 +16,7 @@ const Song = ({
   duration,
   albumId
 }) => ({
-  songId,
+  id,
   title,
   year,
   genre,
@@ -16,4 +25,4 @@ const Song = ({
   albumId
 });
 
-module.exports = Song;
+module.exports = SongSimple;

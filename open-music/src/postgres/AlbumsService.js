@@ -4,6 +4,7 @@ const InvariantError = require('../exceptions/InvariantError');
 const Album =  require('../model/Album');
 const NotFoundError = require('../exceptions/NotFoundError');
 const config = require('./config');
+const SongSimple = require("../model/Song");
 
 class AlbumsService {
   constructor() {
@@ -16,7 +17,7 @@ class AlbumsService {
       values: [id, name, year],
     };
     const result = await this._pool.query(query);
-    const albumId = result.rows.at(0).id;
+    const albumId = result.rows[0].id;
     if (!albumId) {
       throw new InvariantError('Failed to insert album');
     }
@@ -36,14 +37,19 @@ class AlbumsService {
     const album = albumResult.rows[0];
     //console.log(album);
     const songQuery = {
-      text: 'SELECT id, title, performer FROM songs where id = $1',
+      text: 'SELECT * FROM songs WHERE album_id = $1',
       values: [id],
     };
     const songResult = await this._pool.query(songQuery);
-    const songs = songResult.rows;
+    console.log(songResult.rows);
+    const songs = songResult.rows.map(SongSimple);
     const result = {
-      album: album,
-      songs: songs,
+      album: {
+        id: album.id,
+        name: album.name,
+        year: album.year,
+        songs: songs
+      }
     };
     return result;
   }
