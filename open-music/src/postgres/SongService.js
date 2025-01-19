@@ -1,0 +1,73 @@
+const { Pool } = require('pg');
+const nanoid = require('nanoid');
+const InvariantError = require('../exceptions/InvariantError');
+const NotFoundError = require('../exceptions/NotFoundError');
+const config = require('./config');
+const Song = require('../model/Song');
+
+class SongService {
+  constructor() {
+    this._pool = new Pool(config);
+  }
+  async getAllSongs({ title, performer }) {
+    const queryResult = await this._pool.query('SELECT * FROM songs');
+    let songs = queryResult.rows;
+    if (title) {
+      songs = songs.filter((s) => s.title.toLowerCase().includes(title.toLowerCase()));
+    }
+    if (performer) {
+      songs = songs.filter((s) => s.performer.toLowerCase().includes(performer.toLowerCase()));
+    }
+    return songs.map(Song);
+  }
+
+  async getSong(id) {
+    const q = {
+      text: 'SELECT * FROM songs WHERE id = $1 LIMIT 1',
+      values: [id],
+    };
+    const result = await this._pool.query(q);
+    if (!result) throw new NotFoundError('No such song found');
+    return result.rows.map(Song);
+  }
+
+  async addSong({ title, year, performer, genre, duration, albumId }){
+    const id = `song-${nanoid.nanoid(16)}`;
+    const q = {
+      text: 'INSERT INTO songs VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id',
+      values: [id, title, year, performer, genre, duration, albumId],
+    };
+    const result = await this._pool.query(q);
+    if (!result) throw new InvariantError('Failed to insert song');
+    return result.rows.map(Song).at(0).songId;
+  }
+
+  async updateSong(id, { title, year, performer, genre, duration, albumId }) {
+    const q  = {
+      text: `
+            UPDATE 
+                songs 
+            SET 
+                title = $2, year = $3, 
+                performer = $4, genre = $5, 
+                duration = $6, albumId = $7
+            WHERE 
+                id = $1
+            `,
+      values: [id, title, year, performer, genre, duration, albumId],
+    };
+    const result = await this._pool.query(q);
+    if (!result) throw new NotFoundError('Failed: No such song');
+  }
+
+  async deleteSong({ id }) {
+    const q = {
+      text: 'DELETE FROM songs WHERE id = $1',
+      values: [id],
+    };
+    const result = this._pool.query(q);
+    if (!result.rows.length) throw new NotFoundError('Failed: No such song');
+  }
+}
+
+module.exports =  SongService;
