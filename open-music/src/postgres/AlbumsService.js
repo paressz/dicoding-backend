@@ -1,14 +1,13 @@
-const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const Album =  require('../model/Album');
 const NotFoundError = require('../exceptions/NotFoundError');
-const config = require('./config');
+const pool = require('./pool');
 const SongSimple = require('../model/Song');
 
 class AlbumsService {
   constructor() {
-    this._pool = new Pool(config);
+    this._pool = pool;
   };
   async addAlbum({ name, year }) {
     const id = `album-${nanoid(16)}`;

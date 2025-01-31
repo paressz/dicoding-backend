@@ -1,13 +1,12 @@
-const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const InvariantError = require('../exceptions/InvariantError');
 const NotFoundError = require('../exceptions/NotFoundError');
-const config = require('./config');
+const pool = require('./pool');
 const Song = require('../model/Song');
 
 class SongService {
   constructor() {
-    this._pool = new Pool(config);
+    this._pool = pool;
   }
   async getAllSongs({ title, performer }) {
     const queryResult = await this._pool.query('SELECT * FROM songs');
