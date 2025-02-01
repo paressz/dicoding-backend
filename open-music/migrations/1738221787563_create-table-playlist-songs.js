@@ -24,11 +24,11 @@ exports.up = (pgm) => {
     },
   });
 
-  pgm.addConstraint(
-    'playlist_songs',
-    'unique_playlist_and_song_id',
-    'UNIQUE(playlist_id, song_id)'
-  );
+  // pgm.addConstraint(
+  //   'playlist_songs',
+  //   'unique_playlist_and_song_id',
+  //   'UNIQUE(playlist_id, song_id)'
+  // );
   pgm.addConstraint(
     'playlist_songs',
     'fk_playlist_songs.playlist_id_playlists.id',
