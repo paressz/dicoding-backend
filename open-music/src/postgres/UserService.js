@@ -22,8 +22,6 @@ class UserService {
       values: [uname]
     };
     const res = await pool.query(q);
-    console.log(`${uname} ${password}`);
-    console.log(res.rows[0])
     if (!res.rows.length) throw new AuthenticationError('failed: Invalid credentials');
     const { id, password: hashedPassword } = res.rows[0];
     const match = await bcrypt.compare(password, hashedPassword);

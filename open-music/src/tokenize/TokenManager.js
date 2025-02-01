@@ -10,7 +10,8 @@ const TokenManager = {
       jwt.token.verifySignature(art, process.env.REFRESH_TOKEN_KEY);
       const { payload } = art.decoded;
       return payload;
-    } catch (error) {
+    } catch (e) {
+      console.error(e);
       throw new InvariantError('Refresh Token Invalid');
     }
   },

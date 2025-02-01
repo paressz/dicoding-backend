@@ -6,5 +6,5 @@ const UserValidator = {
     const validatedUser = schema.validate(payload);
     if (validatedUser.error) throw new InvariantError(validatedUser.error.message);
   }
-}
+};
 module.exports = UserValidator;

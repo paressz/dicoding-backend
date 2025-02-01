@@ -26,7 +26,6 @@ class PlaylistSongsService {
       values: [plId]
     };
     const res = await pool.query(q);
-    console.log(res.rows)
     if (!res.rows.length) throw new NotFoundError('Failed: invalid playlist id');
     return res.rows;
   }

@@ -64,14 +64,14 @@ class PlaylistsHandler {
   }
   async deletSongFromPlaylistHandler(r) {
     const { playlistId } = r.params;
-    const {songId} = r.payload;
+    const { songId } = r.payload;
     const { id: credentialId } = r.auth.credentials;
     await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
     await this._playlistsSongsService.deleteSongFromPlaylist(songId, playlistId);
     return {
       status: 'success',
       message: `${songId} deleted from ${playlistId}`
-    }
+    };
   }
 }
 module.exports = PlaylistsHandler;
