@@ -4,7 +4,7 @@ const InvariantError = require('../../exceptions/InvariantError');
 const UploadValidator = {
   validateImageHeader: (headers) => {
     const res = schema.validate(headers);
-    if (res.error) throw InvariantError(res.error.message);
+    if (res.error) throw new InvariantError(res.error.message);
   },
 };
 

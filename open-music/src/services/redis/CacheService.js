@@ -17,7 +17,7 @@ class CacheService {
 
   async get(k) {
     const res = await this.client.get(k);
-    console.log(`redis: get ${res}`);
+    console.log(`redis: get ${k} ${res}`);
     if (!res) throw new Error(`Could not find ${k}`);
     return res;
   }

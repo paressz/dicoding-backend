@@ -4,7 +4,7 @@ const Album =  require('../../model/Album');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const pool = require('./pool');
 const SongSimple = require('../../model/Song');
-const res = require('pg/lib/query');
+const ClientError = require('../../exceptions/ClientError');
 
 class AlbumsService {
   constructor(cacheService) {
@@ -39,13 +39,11 @@ class AlbumsService {
     const albumResult = await this._pool.query(albumQuery);
     if (!albumResult.rows.length) throw new NotFoundError('Get failed: No such album');
     const album = albumResult.rows[0];
-    //console.log(album);
     const songQuery = {
       text: 'SELECT * FROM songs WHERE album_id = $1',
       values: [id],
     };
     const songResult = await this._pool.query(songQuery);
-    console.log(songResult.rows);
     const songs = songResult.rows.map(SongSimple);
     const result = {
       album: {
@@ -84,11 +82,27 @@ class AlbumsService {
     };
     return (await this._pool.query(query));
   }
-
-  async addLikeToAlbum(albumId, userId) {
-    const id = `album-likes-${nanoid(16)}`;
+  async checkIsAlbumExist(id) {
     const query = {
-      text: 'INSERT INTO album_likes VALUES ($1, $2, $3) RETURNING id',
+      text: 'SELECT * FROM albums WHERE id = $1',
+      values: [id],
+    };
+    const result = await this._pool.query(query);
+    if (!result.rows.length) throw new NotFoundError('Album not found.');
+  }
+  async addLikeToAlbum(albumId, userId) {
+    const checkLikeQuery = {
+      text: 'SELECT id FROM album_likes WHERE user_id = $1 AND album_id = $2',
+      values: [userId, albumId],
+    };
+    const checkLike = await this._pool.query(checkLikeQuery);
+    const likeExist = checkLike.rows.length > 0;
+    if (likeExist) throw new ClientError('Unable to add like.');
+
+    const id = `album-likes-${nanoid(16)}`;
+    await this.checkIsAlbumExist(albumId);
+    const query = {
+      text: 'INSERT INTO album_likes VALUES ($1, $2, $3) ON CONFLICT (user_id, album_id) DO NOTHING RETURNING id',
       values: [id, userId, albumId],
     };
     const res = await this._pool.query(query);
@@ -108,20 +122,21 @@ class AlbumsService {
         values: [id],
       };
       const res = await this._pool.query(query);
+      if (!res.rows[0].count) throw new NotFoundError(`Invalid albumId ${id}`);
       console.log(`like count: ${res.rows[0].count}`);
       await this._cacheService.set(`cachedAlbumLikes-${id}`, res.rows[0].count);
-      return { likes: res.rows[0].count, source: 'database'};
+      return { likes: +res.rows[0].count, source: 'database' };
     }
   }
 
   async removeLikeFromAlbum(albumId, userId) {
     const albumLikeIdQuery = {
       text: 'SELECT id FROM album_likes WHERE user_id = $1 AND album_id = $2',
-      values: [albumId, userId],
+      values: [userId, albumId],
     };
     const idQuery = await this._pool.query(albumLikeIdQuery);
     if (!idQuery.rows.length) throw new NotFoundError(`Invalid userId ${userId} or albumId ${albumId}`);
-    const albLikeId = res.rows[0].id;
+    const albLikeId = idQuery.rows[0].id;
     const removeLikeQuery = {
       text: 'DELETE FROM album_likes WHERE id = $1 returning id',
       values: [albLikeId],

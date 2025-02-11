@@ -76,7 +76,7 @@ class AlbumHandler {
         status: 'success',
         data: { likes }
       })
-      .headers('X-Data-Source', source);
+      .header('X-Data-Source', source);
     return response;
   }
   async removeLikeFromAlbumHandler(req, h) {

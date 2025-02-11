@@ -50,6 +50,12 @@ const routes = (handler) => [
     options: { auth: 'openmusic-jwt' }
   },
   {
+    method: 'POST',
+    path: '/albums/{id}/likes',
+    handler: (r, h) => handler.addLikeToAlbumHandler(r, h),
+    options: {auth: 'openmusic-jwt' }
+  },
+  {
     method: 'GET',
     path: '/albums/{id}/likes',
     handler: (r, h) => handler.getLikeFromAlbumHandler(r, h),

@@ -23,10 +23,22 @@ exports.up = (pgm) => {
       notNull: true,
     },
   });
-  pgm.createConstraint(
+  pgm.addConstraint(
     'album_likes',
-    'fk_user_album_likes.user_id_users.id',
+    'fk_album_likes.user_id_users.id',
+    'FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE'
+  );
+
+  pgm.addConstraint(
+    'album_likes',
+    'fk_album_likes.album_id_albums.id',
     'FOREIGN KEY(album_id) REFERENCES albums(id) ON DELETE CASCADE'
+  );
+
+  pgm.addConstraint(
+    'album_likes',
+    'albums.id and users.id should be unique',
+    'UNIQUE(user_id, album_id)'
   );
 };
 

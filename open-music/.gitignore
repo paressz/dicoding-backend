@@ -1,2 +1,4 @@
 /.idea
 /node_modules
+src/uploads
+mbroker/node_modules

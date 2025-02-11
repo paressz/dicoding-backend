@@ -10,8 +10,8 @@ const init = async () => {
     const listener = new Listener(service, mailer);
     const conn = await amqp.connect(process.env.RABBITMQ_SERVER);
     const ch = await conn.createChannel();
-    await ch.assertQueue('export playlist', { durable: true });
-    ch.consume('export playlist', listener.listen, { noAck: true });
+    await ch.assertQueue('export:playlists', { durable: true });
+    ch.consume('export:playlists', listener.listen, { noAck: true });
   } catch (e) {
     console.error(`failed to connect to rmq: ${e}`);
   }
