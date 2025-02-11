@@ -1,7 +1,7 @@
 const { nanoid } = require('nanoid');
 const pool = require('./pool');
-const InvariantError = require('../exceptions/InvariantError');
-const AuthenticationError = require('../exceptions/AuthenticationError');
+const InvariantError = require('../../exceptions/InvariantError');
+const AuthenticationError = require('../../exceptions/AuthenticationError');
 const bcrypt = require('bcrypt');
 
 class UserService {

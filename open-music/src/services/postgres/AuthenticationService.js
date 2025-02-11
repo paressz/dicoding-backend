@@ -1,5 +1,5 @@
 const pool = require('./pool');
-const InvariantError = require('../exceptions/InvariantError');
+const InvariantError = require('../../exceptions/InvariantError');
 
 class AuthenticationService {
   async addRefreshToken(refreshToken) {

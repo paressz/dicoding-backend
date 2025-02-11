@@ -1,28 +1,38 @@
 const hapi = require('@hapi/hapi');
 require('dotenv').config();
 const jwt = require('@hapi/jwt');
+const inert = require('@hapi/inert');
+const path = require('path');
 
 const albums = require('./api/album');
-const AlbumService = require('./postgres/AlbumsService');
+const AlbumService = require('./services/postgres/AlbumsService');
 const AlbumValidator = require('./validator/album/AlbumValidator');
 
 
 const songs = require('./api/song');
-const SongService = require('./postgres/SongService');
+const SongService = require('./services/postgres/SongService');
 const SongValidator = require('./validator/song/SongValidator');
 
 const users = require('./api/users');
-const UserService = require('./postgres/UserService');
+const UserService = require('./services/postgres/UserService');
 const UserValidator = require('./validator/users/UserValidator');
 
 const authentication = require('./api/authentications');
-const AuthenticationService = require('./postgres/AuthenticationService');
+const AuthenticationService = require('./services/postgres/AuthenticationService');
 const AuthenticationValidator = require('./validator/authentications/AuthenticationValidator');
 
 const playlists = require('./api/playlists');
-const PlaylistsService = require('./postgres/PlaylistsService');
+const PlaylistsService = require('./services/postgres/PlaylistsService');
 const playlistsValidator = require('./validator/playlists/PlaylistsValidator');
-const PlaylistsSongsService = require('./postgres/PlaylistSongsService');
+const PlaylistsSongsService = require('./services/postgres/PlaylistSongsService');
+
+const _exports = require('./api/exports');
+const ProducerService = require('./services/rmq/ProducerService');
+const ExportsValidator = require('./validator/exports');
+
+const StorageService = require('./services/storage/StorageService');
+const UploadsValidator = require('./validator/uploads');
+const CacheService = require('./services/redis/CacheService');
 
 const TokenManager = require('./tokenize/TokenManager');
 const ClientError = require('./exceptions/ClientError');
@@ -33,6 +43,8 @@ const init = async () => {
   const authenticationsService = new AuthenticationService();
   const playlistsService = new PlaylistsService();
   const playlistsSongsService = new PlaylistsSongsService(songsService);
+  const cacheService = new CacheService();
+  const storageService = new StorageService(path.resolve(__dirname, 'uploads/covers'));
 
   const server = hapi.server({
     port: process.env.PORT,
@@ -43,7 +55,16 @@ const init = async () => {
       }
     }
   });
-  await server.register({ plugin: jwt });
+
+  await server.register([
+    {
+      plugin: jwt
+    },
+    {
+      plugin: inert
+    }
+  ]);
+
   server.auth.strategy('openmusic-jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
     verify: {
@@ -57,12 +78,15 @@ const init = async () => {
       credentials: { id: artifacts.decoded.payload.id }
     })
   });
+
   await server.register([
     {
       plugin: albums,
       options: {
-        service: new AlbumService(),
-        validator: AlbumValidator
+        service: new AlbumService(cacheService),
+        validator: AlbumValidator,
+        storageService,
+        uploadsValidator: UploadsValidator
       }
     },
     {
@@ -96,6 +120,14 @@ const init = async () => {
         validator: playlistsValidator
       }
     },
+    {
+      plugin: _exports,
+      options: {
+        producerService: ProducerService,
+        playlistsService,
+        exportsValidator: ExportsValidator
+      }
+    }
   ]);
   server.ext('onPreResponse', (req, h) => {
     const { response } = req;
