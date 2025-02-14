@@ -54,8 +54,9 @@ class AlbumHandler {
     const { id } = r.params;
     const { cover } = r.payload;
     await this._uploadValidator.validateImageHeader(cover.hapi.headers);
-    const fileName = await this._storageService.writeFile(cover, cover.hapi);
-    const filePath = `http://${process.env.HOST}:${process.env.PORT}/uploads/covers/${fileName}`;
+    const fileName = await this._storageService.writeFile(cover, cover.hapi, id);
+    const filePath = `http://${process.env.HOST}:${process.env.PORT}/albums/covers/${fileName}`;
+    console.log(`insertAlbumCoverHandler: ${filePath}`);
     await this._service.insertAlbumCover(id, filePath);
     return h.response({ status: 'success', message: 'Cover uploaded!' }).code(201);
   }

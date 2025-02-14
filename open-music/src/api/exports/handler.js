@@ -12,7 +12,7 @@ class ExportsHandler {
     await this.playlistsService.verifyPlaylistOwner(playlistId, credentialId);
     const { targetEmail } = r.payload;
     const message = { playlistId, targetEmail };
-    await this.producerService.sendMessage('export:playlists', JSON.stringify(message));
+    await this.producerService.sendMessage('export_playlist', JSON.stringify(message));
     const response = h.response({ status: 'success', message: 'Export in progress' }).code(201);
     return response;
   }

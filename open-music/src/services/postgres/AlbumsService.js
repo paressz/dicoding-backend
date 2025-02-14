@@ -21,7 +21,7 @@ class AlbumsService {
     const result = await this._pool.query(query);
     const albumId = result.rows[0].id;
     if (!albumId) {
-      throw new InvariantError('Failed to insert album');
+      throw new InvariantError('Failed to insert albums');
     }
     return albumId;
   }
@@ -37,7 +37,7 @@ class AlbumsService {
       values: [id],
     };
     const albumResult = await this._pool.query(albumQuery);
-    if (!albumResult.rows.length) throw new NotFoundError('Get failed: No such album');
+    if (!albumResult.rows.length) throw new NotFoundError('Get failed: No such albums');
     const album = albumResult.rows[0];
     const songQuery = {
       text: 'SELECT * FROM songs WHERE album_id = $1',
@@ -63,7 +63,7 @@ class AlbumsService {
       values: [name, year, id],
     };
     const result = await this._pool.query(query);
-    if (!result.rows.length) throw new NotFoundError('Update Failed: No such album');
+    if (!result.rows.length) throw new NotFoundError('Update Failed: No such albums');
   }
 
   async deleteAlbum({ id }) {

@@ -4,7 +4,7 @@ const jwt = require('@hapi/jwt');
 const inert = require('@hapi/inert');
 const path = require('path');
 
-const albums = require('./api/album');
+const albums = require('./api/albums');
 const AlbumService = require('./services/postgres/AlbumsService');
 const AlbumValidator = require('./validator/album/AlbumValidator');
 
@@ -44,7 +44,9 @@ const init = async () => {
   const playlistsService = new PlaylistsService();
   const playlistsSongsService = new PlaylistsSongsService(songsService);
   const cacheService = new CacheService();
-  const storageService = new StorageService(path.resolve(__dirname, 'uploads/covers'));
+  const storePath = path.resolve(__dirname, 'api/albums/file/covers');
+  console.log(`a: ${  storePath}`);
+  const storageService = new StorageService(storePath);
 
   const server = hapi.server({
     port: process.env.PORT,

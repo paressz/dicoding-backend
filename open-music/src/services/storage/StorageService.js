@@ -5,9 +5,10 @@ class StorageService {
     this.dir = dir;
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   }
-  writeFile(file, meta) {
-    const name = +new Date() + meta.filename;
-    const path = `${this.dir}/${name}`;
+  writeFile(file, meta, albumId) {
+    const name = albumId + meta.filename;
+    const path = `${this.dir}\\${name}`;
+    console.log(`wr:${  path}`);
     const wrStream = fs.createWriteStream(path);
     return new Promise((resolve, reject) => {
       wrStream.on('error', (err) => {
